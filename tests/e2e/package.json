@@ -12,5 +12,10 @@
   "license": "ISC",
   "devDependencies": {
     "@playwright/test": "^1.58.2"
-  }
+  },
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "type": "commonjs"
 }

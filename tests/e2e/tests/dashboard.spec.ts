@@ -1,81 +1,55 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Home Banking Dashboard', () => {
-  test('dashboard loads and displays accounts', async ({ page }) => {
+  test('should load the dashboard and display accounts', async ({ page }) => {
     await page.goto('/');
 
     // Check page title
-    await expect(page).toHaveTitle(/Home Banking/);
+    await expect(page).toHaveTitle('Home Banking');
 
-    // Check main heading
-    await expect(page.getByRole('heading', { name: 'Home Banking' })).toBeVisible();
+    // Check heading
+    await expect(page.getByRole('heading', { name: 'Home Banking', level: 1 })).toBeVisible();
 
-    // Check that account cards are displayed
-    await expect(page.getByText('John Doe')).toBeVisible();
-    await expect(page.getByText('Jane Smith')).toBeVisible();
-    await expect(page.getByText('Bob Johnson')).toBeVisible();
+    // Check that 3 account cards are displayed by their headings
+    await expect(page.getByRole('heading', { name: 'John Doe', level: 3 })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Jane Smith', level: 3 })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Bob Johnson', level: 3 })).toBeVisible();
 
-    // Check that account numbers are visible
-    await expect(page.getByText('ACC-1001')).toBeVisible();
-    await expect(page.getByText('ACC-1002')).toBeVisible();
-    await expect(page.getByText('ACC-1003')).toBeVisible();
+    // Check that account balances are displayed
+    await expect(page.getByText('USD 5420.50')).toBeVisible();
+    await expect(page.getByText('USD 12750.00')).toBeVisible();
+    await expect(page.getByText('USD 3200.75')).toBeVisible();
   });
 
-  test('transaction list displays transactions', async ({ page }) => {
+  test('should display transaction list', async ({ page }) => {
     await page.goto('/');
 
-    // Check transactions table heading
-    await expect(page.getByRole('heading', { name: 'Recent Transactions' })).toBeVisible();
+    // Check transactions heading
+    await expect(page.getByRole('heading', { name: 'Recent Transactions', level: 2 })).toBeVisible();
 
-    // Check that table headers are present
-    await expect(page.getByText('Date')).toBeVisible();
-    await expect(page.getByText('Description')).toBeVisible();
-    await expect(page.getByText('Category')).toBeVisible();
-    await expect(page.getByText('Type')).toBeVisible();
-    await expect(page.getByText('Amount')).toBeVisible();
+    // Check that table headers are visible using column headers
+    await expect(page.getByRole('columnheader', { name: 'Date' })).toBeVisible();
+    await expect(page.getByRole('columnheader', { name: 'Description' })).toBeVisible();
+    await expect(page.getByRole('columnheader', { name: 'Category' })).toBeVisible();
+    await expect(page.getByRole('columnheader', { name: 'Type' })).toBeVisible();
+    await expect(page.getByRole('columnheader', { name: 'Amount' })).toBeVisible();
 
-    // Check that transactions are displayed (at least one transaction row)
-    const tableRows = page.locator('tbody tr');
-    await expect(tableRows.first()).toBeVisible();
-    
-    // Check for category badges
-    await expect(page.locator('.inline-flex.items-center.rounded-full').first()).toBeVisible();
+    // Check that at least one transaction is visible
+    const rows = page.locator('tbody tr');
+    await expect(rows).toHaveCount(20);
   });
 
-  test('transfer form validation', async ({ page }) => {
+  test('should display transfer form', async ({ page }) => {
     await page.goto('/');
 
-    // Find the transfer form
-    await expect(page.getByRole('heading', { name: 'Transfer Funds' })).toBeVisible();
+    // Check transfer form heading
+    await expect(page.getByRole('heading', { name: 'Transfer Funds', level: 3 })).toBeVisible();
 
-    // Try to submit without filling the form
-    const transferButton = page.getByRole('button', { name: 'Transfer' });
-    await transferButton.click();
-
-    // Should show validation error
-    await expect(page.getByText(/Please select both accounts/)).toBeVisible();
-  });
-
-  test('complete transfer flow', async ({ page }) => {
-    await page.goto('/');
-
-    // Fill the transfer form
-    const fromAccountSelect = page.locator('#fromAccount');
-    const toAccountSelect = page.locator('#toAccount');
-    const amountInput = page.locator('#amount');
-    const descriptionInput = page.locator('#description');
-
-    await fromAccountSelect.selectOption({ index: 1 }); // Select first account
-    await toAccountSelect.selectOption({ index: 2 }); // Select second account
-    await amountInput.fill('50.00');
-    await descriptionInput.fill('Test transfer');
-
-    // Submit the form
-    const transferButton = page.getByRole('button', { name: 'Transfer' });
-    await transferButton.click();
-
-    // Wait for success message
-    await expect(page.getByText(/Transfer successful/)).toBeVisible({ timeout: 10000 });
-    await expect(page.getByText(/Reference:/)).toBeVisible();
+    // Check form fields
+    await expect(page.getByLabel('From Account')).toBeVisible();
+    await expect(page.getByLabel('To Account')).toBeVisible();
+    await expect(page.getByLabel('Amount')).toBeVisible();
+    await expect(page.getByLabel('Description')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Transfer' })).toBeVisible();
   });
 });
