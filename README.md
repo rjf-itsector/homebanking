@@ -2,6 +2,8 @@
 
 A full-stack home banking application featuring ASP.NET Core 9 API backend and React frontend with TypeScript.
 
+> **✅ Application Verified**: See [VERIFICATION.md](docs/VERIFICATION.md) for screenshots and proof that the application has been built, tested, and is fully functional.
+
 ## 🏗️ Architecture
 
 This monorepo contains:
